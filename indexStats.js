@@ -112,6 +112,7 @@ DB.prototype.indexStats = function(slowQueries) {
         exec_stats.stage == "UPDATE" ||
         exec_stats.stage == "SKIP" ||
         exec_stats.stage == "DELETE" ||
+        exec_stats.stage == "ENSURE_SORTED" ||               
         exec_stats.stage == "SORT_MERGE") {
       if (exec_stats.stage === 'FETCH') {
         if (slowQueries && exec_stats.nReturned + 1000 < exec_stats.docsExamined) {
@@ -162,7 +163,9 @@ DB.prototype.indexStats = function(slowQueries) {
     switch(profile_document.op) {
       case "query":
         var collection = collectionNameFromProfileDocument (profile_document);
-        updateIndexCounts (profile_document.execStats, collection, profile_document);
+        if (profile_document.execStats) {         
+          updateIndexCounts (profile_document.execStats, collection, profile_document);        
+        }
         break;
 
       case "update":
